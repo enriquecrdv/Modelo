@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtDecode } from "jwt-decode";
-console.log("🚨 Middleware activo");
-console.log("🔑 Token recibido:", token);
 
 export function middleware(request: NextRequest) {
   const token = request.cookies.get("token")?.value;
@@ -33,7 +31,6 @@ export function middleware(request: NextRequest) {
   }
 }
 
-// ✅ ESTA CONFIGURACIÓN DEBE ESTAR AQUÍ MISMO (NO EN next.config.ts)
 export const config = {
-  matcher: ["/"],
+  matcher: ["/admin/:path*", "/usuario/:path*"],
 };

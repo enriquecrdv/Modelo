@@ -1,6 +1,8 @@
+
+
 "use client";
 export const dynamic = "force-dynamic"; // 🔐 Fuerza que el middleware se ejecute
-
+middleware 
 import { useRouter } from "next/navigation";
 
 export default function UsuarioPage() {
