@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtDecode } from "jwt-decode";
 
+type DecodedToken = {
+  rol?: string;
+  exp?: number;
+};
+
 export function middleware(request: NextRequest) {
   const token = request.cookies.get("token")?.value;
   const url = request.nextUrl;
@@ -12,7 +17,14 @@ export function middleware(request: NextRequest) {
   }
 
   try {
-    const decoded: any = jwtDecode(token);
+    const decoded = jwtDecode<DecodedToken>(token);
+
+    if (decoded.exp && Date.now() >= decoded.exp * 1000) {
+      const response = NextResponse.redirect(new URL("/login", request.url));
+      response.cookies.set("token", "", { maxAge: 0 });
+      return response;
+    }
+
     const rol = decoded.rol;
 
     if (url.pathname.startsWith("/admin") && rol !== "admin") {
@@ -24,7 +36,8 @@ export function middleware(request: NextRequest) {
     }
 
     return NextResponse.next();
-  } catch {
+  } catch (err) {
+    console.error("❌ Error al verificar el token:", err);
     const response = NextResponse.redirect(new URL("/login", request.url));
     response.cookies.set("token", "", { maxAge: 0 });
     return response;
